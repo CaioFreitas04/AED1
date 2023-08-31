@@ -8,6 +8,7 @@ typedef struct string{
 
 string *strcreate(unsigned L){
     string *temp;
+    temp = (string*) calloc(1, sizeof(string));
     temp->arr = (char*) calloc(L, sizeof(char));
     return temp;
 }
