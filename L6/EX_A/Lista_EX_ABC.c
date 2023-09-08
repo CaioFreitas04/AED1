@@ -54,7 +54,7 @@ int inserirPos(list *l, alu input, int pos){
     int i;
     if(l == NULL) return 2;
     if(listCheia(l) == 0) return 1;
-    for(i = pos; i <= l->total; i++){
+    for(i = l->total; i > pos; i--){
         l->index[i] = l->index[i-1];
     }
     l->index[pos] = input;
@@ -66,7 +66,7 @@ int removerIni(list *l){
     int i;
     if (l == NULL) return 2;
     if (listVazia(l) == 0) return 1;
-    for (i=0;i<l->total-1;i++){
+    for (i = 0; i < l->total-1; i++){
         l->index[i] = l->index[i+1];
     }
     l->total--;
@@ -84,8 +84,8 @@ int removerPos(list *l, int pos){
     int i;
     if (l == NULL) return 2;
     if (listVazia(l) == 0) return 1;
-    for (i = pos; i < l->total; i++){
-        l->index[i] = l->index[i+1];
+    for(i = l->total; i > pos; i--){
+        l->index[i] = l->index[i-1];
     }
     l->total--;
     return 0;
@@ -152,15 +152,8 @@ void mostrar(list *l){
 }
 
 int contemItem(list *l, alu input){
-    int i;
-    if(l == NULL) return 2;
-    if(listVazia(l) == 0) return 1;
-    for(i = 0; i < l->total; i++){
-        if(l->index[i].mat == input.mat){
-            return 0;
-        }
-    }
-    return -1;
+    alu inutil;
+    return buscChave(l, input.mat, &inutil);
 }
 
 int invertList(list *l, list *invert){
