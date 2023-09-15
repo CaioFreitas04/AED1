@@ -19,5 +19,13 @@ int emptyList(list *l);
 int sizeList(list *l);
 void clear(list *l);
 void displayList(list *l);
+//EX B;
+int contItem(list *l, aln input);
+list *concatenate(list *l1, list *l2);
+//EX C;
+int maiorNota(list *l, aln *out);
+//EX D;
+int removeFirstN(list *l, int N);
+
 
 #endif

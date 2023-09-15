@@ -7,16 +7,17 @@ typedef struct lista{
     no *ini;
 } list;
 
-typedef struct node{
-    aln index;
-    no *next;
-} no;
-
 typedef struct aluno{
     int mat;
     char nome[30];
     float not;
 } aln;
+
+typedef struct node{
+    aln index;
+    no *next;
+} no;
+
 
 //funções;
 list *create(){
@@ -167,4 +168,66 @@ void displayList(list *l){
             nlist = nlist->next;
         }
     }
+}
+
+//EX B;
+int contItem(list *l, aln input){
+    aln dummy;
+    return searchKey(l, input.mat, &dummy);
+}
+
+list *concatenate(list *l1, list *l2){
+    list *out;
+    no *nlist = l1->ini;
+
+    create(out);
+
+    //inserindo os elementos de cada lista, caso nenhuma seja NULL;
+    if(out != NULL && l1 != NULL && l2 != NULL){
+        while(nlist->next != NULL){
+            insertEnd(out, nlist->index);
+            nlist = nlist->next;
+        }
+        nlist = l2->ini;
+        while(nlist->next != NULL){
+            insertEnd(out, nlist->index);
+            nlist = nlist->next;
+        }
+    }
+
+    return out;
+}
+
+//EX C;
+int displayGreatestGrade(list *l){
+    no *nlist = l->ini;
+    aln maior_nota;
+
+    if(l == NULL) return 2;
+    if(emptyList(l) == 0) return 1;
+
+    maior_nota = nlist->index;
+    while(nlist->next != NULL){
+        if(nlist->index.not > maior_nota.not){
+            maior_nota = nlist->index;
+        }
+        nlist = nlist->next;
+    }
+
+    printf("[%d, %s, %.2f]\n", maior_nota.mat, maior_nota.nome, maior_nota.not);
+
+    return 0;
+}
+
+//EX D;
+int removeFirstN(list *l, int N){
+    if(l == NULL) return 2;
+    if(emptyList(l) == 0) return 1;
+
+    while(N > 0 && l->ini != NULL){
+        removeIni(l);
+        N--;
+    }
+
+    return 0;
 }
