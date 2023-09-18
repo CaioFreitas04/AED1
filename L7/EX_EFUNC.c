@@ -1,32 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "list.h"
+#include <string.h>
+#include "listair.h"
+
 
 //structs;
 typedef struct lista{
+    char sigla[5];   //essa string foi armazenada para que a lista codifique qual o aeroporto-origem;
     no *ini;
 } list;
 
-typedef struct aluno{
-    int mat;
-    char nome[30];
-    float not;
-} aln;
+typedef struct aeroporto{
+    char nome[30], sigla[5];
+    float prec;
+} aer;
 
 typedef struct node{
-    aln index;
+    aer index;
     no *next;
 } no;
 
-
 //funções;
-list *create(){
+list *create(char *sigla){
     list *l = (list*) calloc(1, sizeof(list));
     l->ini = NULL;
+    strcpy(l->sigla, sigla);
     return l;
 }
 
-int insertIni(list *l, aln input){
+int insertIni(list *l, aer input){
     no *n1 = (no*) calloc(1, sizeof(no));
 
     if(l == NULL) return 2;
@@ -36,7 +38,7 @@ int insertIni(list *l, aln input){
     return 0;
 }
 
-int insertEnd(list *l, aln input){
+int insertEnd(list *l, aer input){
     no *nlist = (no*) calloc(1, sizeof(no));
     no *n = (no*) calloc(1, sizeof(no));
 
@@ -51,7 +53,7 @@ int insertEnd(list *l, aln input){
     return 0;
 }
 
-int insertPos(list *l, aln input, int pos){
+int insertPos(list *l, aer input, int pos){
     int i = 0;
     no *nlist = l->ini;
     no *n = (no*) calloc(1, sizeof(no));
@@ -110,14 +112,14 @@ int removePos(list *l, int pos){
     return 0;
 }
 
-int removeItem(list *l, aln input){
+int removeItem(list *l, aer input){
     no *nlist = l->ini;
     int i = 0;
 
     if(l == NULL) return 2;
     if(emptyList(l) == 0) return 1;
     while((nlist->next != NULL)){
-        if(nlist->index.mat == input.mat){
+        if(strcmp(nlist->index.sigla, input.sigla) == 0){
             return removePos(l, i);
         }
         nlist = nlist->next;
@@ -126,35 +128,20 @@ int removeItem(list *l, aln input){
     return -1;
 }
 
-int searchKey(list *l, int key, aln *out){
+int searchKey(list *l, char *key, aer *out){
     no *nlist = l->ini;
 
     if(l == NULL) return 2;
     while(nlist != NULL){
-        if(nlist->index.mat == key){
+        if(strcmp(nlist->index.sigla, key) == 0){
             *out = nlist->index;
             return 0;
         }
+        printf("%d\n", strcmp(nlist->index.sigla, key));
         nlist = nlist->next;
     }
 
     return 1;
-}
-
-int searchPos(list *l, int pos, aln *out){
-    no *nlist = l->ini;
-    if(l == NULL) return 2;
-    if(emptyList(l) == 0) return 1;
-    while((nlist->next != NULL) && (pos > 0)){
-        nlist = nlist->next;
-        pos--;
-    }
-    if(pos == 0){
-        *out = nlist->index;
-        return 0;
-    }
-    else return -1;
-
 }
 
 int emptyList(list *l){
@@ -179,75 +166,47 @@ void clear(list *l){
     while(emptyList(l) != 0) removeIni(l);
 }
 
+//como cada lista representará uma cidade, essa função servirá para mostrar todas as rotas da cidade da lista até as cidades com as quais está conectada;
 void displayList(list *l){
     no *nlist = l->ini;
 
     if(l != NULL){
         while(nlist != NULL){
-            printf("[%d, %s, %.2f]\n", nlist->index.mat, nlist->index.nome, nlist->index.not);
+            printf("[%s - %s: %.2f]\n", nlist->index.nome, nlist->index.sigla, nlist->index.prec);
             nlist = nlist->next;
         }
     }
 }
 
-//EX B;
-int contItem(list *l, aln input){
-    aln dummy;
-    return searchKey(l, input.mat, &dummy);
+int contItem(list *l, aer input){
+    aer dummy;
+    return searchKey(l, input.sigla, &dummy);
 }
 
-list *concatenate(list *l1, list *l2){
-    list *out;
-    no *nlist = l1->ini;
-
-    create(out);
-
-    //inserindo os elementos de cada lista, caso nenhuma seja NULL;
-    if(out != NULL && l1 != NULL && l2 != NULL){
-        while(nlist->next != NULL){
-            insertEnd(out, nlist->index);
-            nlist = nlist->next;
-        }
-        nlist = l2->ini;
-        while(nlist->next != NULL){
-            insertEnd(out, nlist->index);
-            nlist = nlist->next;
-        }
-    }
-
-    return out;
-}
-
-//EX C;
-int displayGreatestGrade(list *l){
+int displayCaraBarata(list *l){
     no *nlist = l->ini;
-    aln maior_nota;
-
+    aer mcar, mbar;
     if(l == NULL) return 2;
     if(emptyList(l) == 0) return 1;
-
-    maior_nota = nlist->index;
-    while(nlist->next != NULL){
-        if(nlist->index.not > maior_nota.not){
-            maior_nota = nlist->index;
-        }
+    mcar = nlist->index;
+    mbar = mcar;
+    while(nlist != NULL){
         nlist = nlist->next;
+        if(mcar.prec < nlist->index.prec) mcar = nlist->index;
+        if(mbar.prec > nlist->index.prec) mbar = nlist->index;
     }
-
-    printf("[%d, %s, %.2f]\n", maior_nota.mat, maior_nota.nome, maior_nota.not);
-
+    printf("ROTA MAIS CARA: [%s -> %s, %.2f]\n", l->sigla, mcar.sigla, mcar.prec);
+    printf("ROTA MAIS BARATA: [%s -> %s, %.2f]\n", l->sigla, mbar.sigla, mbar.prec);
     return 0;
 }
 
-//EX D;
-int removeFirstN(list *l, int N){
+int showPrice(list *l, char *destin){
+    aer out;
     if(l == NULL) return 2;
     if(emptyList(l) == 0) return 1;
-
-    while(N > 0 && l->ini != NULL){
-        removeIni(l);
-        N--;
+    if(searchKey(l, destin, &out) != 0){
+        return -1;
     }
-
+    printf("[%s -> %s, %.2f]\n", l->sigla, out.sigla, out.prec);
     return 0;
 }
